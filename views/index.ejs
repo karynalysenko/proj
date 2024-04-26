@@ -1,0 +1,51 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MY APP</title>
+    <script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
+    <!-- <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <link rel="stylesheet" href="styles/styles.css">
+
+  </head>
+  <body>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    
+    <div id="title">
+      <h1>MY APP</h1>
+    </div>
+    <div id="container">
+      <div id="sidebar">
+        <div class="sidebar-item">
+          <label for="file-input">Import XLSX File:</label>
+          <input type="file" id="file-input" accept=".xlsx">
+          <button id="run-btn">Run</button>
+        </div>
+        <div class="sidebar-item">
+          <label for="style-select">Select Style:</label>
+          <select id="style-select">
+            <option value="default">Default</option>
+            <option value="molecule">Molecule</option>
+            <!-- Add more options for additional styles -->
+          </select>
+        </div>
+        <!-- <div class="sidebar-item"></div> -->
+          <h4>Layout</h4>
+          <div id="layout-icons">
+            <span id="grid-icon" class="mdi mdi-dots-grid"></span>
+            <span id="circle-icon" class="mdi mdi-dots-circle"></span>
+            <span id="random-icon" class="fa fa-random"></span>
+          </div>
+        <!-- </div> -->
+      </div>
+      <div id="cy"></div>
+    </div>
+
+
+    
+  </div>
+    <script src="cy.js" type="module"></script>
+  </body>
+</html>
