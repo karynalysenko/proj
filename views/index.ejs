@@ -1,51 +1,127 @@
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
+<head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MY APP</title>
     <script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
-    <!-- <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script> -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <link rel="stylesheet" href="styles/styles.css">
-
-  </head>
-  <body>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    
-    <div id="title">
-      <h1>MY APP</h1>
+</head>
+<body>
+    <header>
+        <h1>MY APP</h1>
+    </header>
+    <div class="top-container">
+        <div class="file-input-container">
+            <label for="file-input">Import csv file:</label>
+            <input type="file" id="file-input" accept=".csv">
+            <button id="run-btn">Import</button>
+        </div>
+        <div class="expression-toggle-container">
+            <span>Add Expression Values:</span>
+            <label>
+                <input type="radio" name="expression" value="yes" id="expression-yes">
+                <span>Yes</span>
+            </label>
+            <label>
+                <input type="radio" name="expression" value="no" id="expression-no" checked>
+                <span>No</span>
+            </label>
+        </div>
+        <div class="expression-container" id="expression-container">
+            <label for="expression-file-input">Import csv file:</label>
+            <input type="file" id="expression-file-input" accept=".csv">
+            <button id="expression-run-btn">Run expression values</button>
+        </div>
+        <div class="file-export-container">
+            <button id="export-btn">Export as PNG</button>
+        </div>
     </div>
     <div id="container">
-      <div id="sidebar">
-        <div class="sidebar-item">
-          <label for="file-input">Import XLSX File:</label>
-          <input type="file" id="file-input" accept=".xlsx">
-          <button id="run-btn">Run</button>
-        </div>
-        <div class="sidebar-item">
-          <label for="style-select">Select Style:</label>
-          <select id="style-select">
-            <option value="default">Default</option>
-            <option value="molecule">Molecule</option>
-            <!-- Add more options for additional styles -->
-          </select>
-        </div>
-        <!-- <div class="sidebar-item"></div> -->
-          <h4>Layout</h4>
-          <div id="layout-icons">
-            <span id="grid-icon" class="mdi mdi-dots-grid"></span>
-            <span id="circle-icon" class="mdi mdi-dots-circle"></span>
-            <span id="random-icon" class="fa fa-random"></span>
-          </div>
-        <!-- </div> -->
-      </div>
-      <div id="cy"></div>
+        <aside id="sidebar">
+            <div id="network-details" class="details-container">
+                <h4>Details about the network</h4>
+                <span id="node-count"></span>
+                <span id="edge-count"></span>
+            </div>
+            <div class="node-search-container">
+                <input type="text" id="node-search-input" placeholder="Search Node">
+                <button id="node-search-btn">Search</button>
+            </div>
+            <button id="menu-btn">Menu</button>
+            <div id="configurations" class="configurations">
+                <div id="layout-icons" class="sidebar-item">
+                    <span>Layout type:</span>
+                    <div class="icon-container">
+                        <span id="grid-icon" class="mdi mdi-dots-grid"></span>
+                        <span id="circle-icon" class="mdi mdi-dots-circle"></span>
+                        <span id="random-icon" class="fa fa-random"></span>
+                    </div>
+                </div>
+                
+                <div class="sidebar-item">
+                    <label for="node-size-slider">Node Size: </label>
+                    <input type="range" id="node-size-slider" min="1" max="5" value="2">
+                </div>
+                <div class="sidebar-item">
+                    <label for="style-select">Select pre-defined Style:</label>
+                    <select id="style-select">
+                        <option value="default">Default</option>
+                        <option value="molecule">Molecule</option>
+                    </select>
+                </div>
+                <div class="sidebar-item">
+                    <label for="bg-color-select">Background Color:</label>
+                    <select id="bg-color-select">
+                        <option value="#f0f0f0">Default</option>
+                        <option value="#ffffff">White</option>
+                        <option value="#000000">Black</option>
+                        <option value="#ff0000">Red</option>
+                        <option value="#00ff00">Green</option>
+                        <option value="#0000ff">Blue</option>
+                    </select>
+                </div>
+                <div class="sidebar-item">
+                    <label for="font-color-select">Font color:</label>
+                    <select id="font-color-select">
+                        <option value="#ffffff">White</option>
+                        <option value="#000000">Black</option>
+                        <option value="#ff0000">Red</option>
+                        <option value="#00ff00">Green</option>
+                        <option value="#0000ff">Blue</option>
+                    </select>
+                </div>
+                <div class="sidebar-item">
+                    <label for="node-color-select">Node color:</label>
+                    <select id="node-color-select">
+                        <option value="#666">Default</option>
+                        <option value="#ffffff">White</option>
+                        <option value="#000000">Black</option>
+                        <option value="#ff0000">Red</option>
+                        <option value="#00ff00">Green</option>
+                        <option value="#0000ff">Blue</option>
+                    </select>
+                </div>
+                <div class="sidebar-item">
+                    <label for="edge-color-select">Edge color:</label>
+                    <select id="edge-color-select">
+                        <option value="#ccc">Default</option>
+                        <option value="#ffffff">White</option>
+                        <option value="#000000">Black</option>
+                        <option value="#ff0000">Red</option>
+                        <option value="#00ff00">Green</option>
+                        <option value="#0000ff">Blue</option>
+                    </select>
+                </div>
+                
+            </div>
+        </aside>
+        <main id="cy"></main>
     </div>
-
-
-    
-  </div>
     <script src="cy.js" type="module"></script>
-  </body>
+        
+</body>
 </html>

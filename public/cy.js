@@ -1,57 +1,89 @@
 // import cytoscape from 'cytoscape';
 import { defaultStyle, moleculeStyle } from './styles.js';
 
+let expressionData = null;
+
 document.addEventListener('DOMContentLoaded', function() {
-    var cy = window.cy = cytoscape({
-        container: document.getElementById('cy'),
-        elements: [],
-        layout:{ name : 'grid' },
-        style: { name: 'default' }
+    const backgroundSelect = document.getElementById('bg-color-select');
+    const fontSelect = document.getElementById('font-color-select');
+    const nodeColorSelect = document.getElementById('node-color-select');
+    const edgeColorSelect = document.getElementById('edge-color-select');
+    const styleSelect = document.getElementById('style-select');
+    const layoutIcons = document.getElementById('layout-icons');
+    const nodeSizeSlider = document.getElementById('node-size-slider');
+    const nodeSearchInput = document.getElementById('node-search-input');
+    const nodeSearchBtn = document.getElementById('node-search-btn');
+    const runBtn = document.getElementById('run-btn');
+    const fileInput = document.getElementById('file-input');
+    const nodeCountDisplay = document.getElementById('node-count');
+    const edgeCountDisplay = document.getElementById('edge-count');
+    const exportBtn = document.getElementById('export-btn');
+    const expressionYes = document.getElementById('expression-yes');
+    const expressionNo = document.getElementById('expression-no');
+    const expressionContainer = document.getElementById('expression-container');
+    const expressionFileInput = document.getElementById('expression-file-input');
+    const expressionRunBtn = document.getElementById('expression-run-btn');
+    const menuBtn = document.getElementById('menu-btn');
+    const configurations = document.getElementById('configurations');
+
+    
+    menuBtn.addEventListener('click', () => {
+        if (configurations.style.display === 'none' || configurations.style.display === '') {
+            configurations.style.display = 'block';
+        } else {
+            configurations.style.display = 'none';
+        }
     });
 
-    // Function to apply the selected style
-    function applyStyle(style) {
-        // cy.style().clear(); // Clear existing styles
-        cy.style().fromJson(style).update(); // Apply new style
+    var cy = window.cy = cytoscape({
+        container: document.getElementById('cy'),
+        elements: []
+        // layout:{ name : 'grid' },
+        // style: { name: 'default' }
+    });
 
-    }
+    window.addEventListener('resize', function() {
+        cy.resize(); // Resize the cytoscape container
+        // cy.layout({ name: 'random' }).run(); // Run the layout to adjust the network elements
+    });
 
+    backgroundSelect.addEventListener('change', function() {
+        const bgColor = backgroundSelect.value;
+        // Set the background color of the cy element
+        document.getElementById('cy').style.backgroundColor = bgColor;
+    });
 
-    // Apply the selected style
-    const styleSelect = document.getElementById('style-select');
-    styleSelect.addEventListener('change', function() {
+    fontSelect.addEventListener('change', function() {
+        const fontColor = fontSelect.value;
+        cy.style().selector('node').css('color', fontColor).update();
+    });
+
+    nodeColorSelect.addEventListener('change', function() {
+        const nodeColor = nodeColorSelect.value;
+        cy.style().selector('node').css('background-color', nodeColor).update();
+    });
+
+    edgeColorSelect.addEventListener('change', function() {
+        const edgeColor = edgeColorSelect.value;
+        cy.style().selector('edge').css('line-color', edgeColor).update();
+        cy.style().selector('edge').css('target-arrow-color', edgeColor).update();
+    });
+
+    styleSelect.addEventListener('click', function() {
         const selectedStyle = styleSelect.value;
         switch (selectedStyle) {
             case 'default':
                 applyStyle(defaultStyle);
+                nodeColorSelect.value = '#666';
                 break;
             case 'molecule':
                 applyStyle(moleculeStyle);
+                nodeColorSelect.value = '#0000ff';
                 break;
             default:
                 break;
         }
     });
-
-    // Function to apply the selected layout
-    function applyLayout(layoutName) {
-        cy.layout({ name: layoutName }).run();
-    }
-
-    function setDefault() {
-        applyStyle(defaultStyle);
-        styleSelect.value = 'default';
-        layoutIcons.value = 'grid';
-        fileInput.value = ''
-    }
-    // Apply the selected layout
-    // const layoutSelect = document.getElementById('layout-select');
-    // layoutSelect.addEventListener('change', function() {
-    //     const selectedLayout = layoutSelect.value;
-    //     applyLayout(selectedLayout);
-    // });
-    // Apply the selected layout
-    const layoutIcons = document.getElementById('layout-icons');
 
     layoutIcons.addEventListener('click', function(event) {
         const selectedIcon = event.target.id;
@@ -71,59 +103,271 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-
-    // Event listener for file input change
-    const fileInput = document.getElementById('file-input');
-    fileInput.addEventListener('change', function(event) {
-    const file = event.target.files[0];
-    if (!file) return; // No file selected
-
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const data = e.target.result;
-        const jsonData = Papa.parse(data, { header: true }).data;
-
-        // Store the parsed data in a variable accessible to the 'Run' button click event
-        window.parsedData = jsonData;
-
-        console.log('Parsed data:', window.parsedData);
-    };
-    reader.readAsText(file);
+    nodeSizeSlider.addEventListener('input', function() {
+        const multiplier = nodeSizeSlider.value;
+        const nodeCounts = calculateNodeCounts(window.parsedData).nodeCounts;
+        adjustNodeSizes(nodeCounts, multiplier);
+    });
+    
+    nodeSearchBtn.addEventListener('click', function() {
+        const searchValue = nodeSearchInput.value.trim();
+        if (searchValue) {
+            const node = cy.$id(searchValue);
+            if (node.length > 0) {
+                cy.zoom({
+                    level: 2, // Adjust the zoom level as needed
+                    position: node.position()
+                });
+                cy.center(node); // Center the node in the viewport
+            } else {
+                alert('Node not found');
+            }
+        } else {
+            alert('Please enter a node ID');
+        }
     });
 
+    fileInput.addEventListener('change', function(event) {
+        handleFileUpload(event, function(jsonData) {
+            window.parsedData = jsonData;
+            // console.log('Parsed data:', window.parsedData);
+        });
+    });
 
-    // Event listener for 'Run' button click
-    const runBtn = document.getElementById('run-btn');
     runBtn.addEventListener('click', function() {
-        console.log('Run button clicked');
 
         if (!window.parsedData) {
-            alert('Please select an XLSX file first.');
+            alert('Please select a CSV file first.');
             return;
         }
+        cy.elements().remove();
 
-        // Process the parsed data and create nodes and edges
+        const hasDirectedColumn = window.parsedData[0] && window.parsedData[0].hasOwnProperty('directed');
         window.parsedData.forEach(row => {
             const source = row['source'];
             const target = row['target'];
+            const direction = hasDirectedColumn && row['directed'] && row['directed'].toLowerCase() === 'true';
 
             if (source && target) {
                 cy.add([
-                    { data: { id: source } },
-                    { data: { id: target } },
-                    { data: { id: `${source}-${target}`, source: source, target: target } }
+                    { group: 'nodes', data: { id: source } },
+                    { group: 'nodes', data: { id: target } },
+                    {
+                        group: 'edges',
+                        data: { id: `${source}-${target}`, source: source, target: target },
+                        classes: direction ? 'directed' : ''
+                    }
                 ]);
+                console.log(`Edge added: ${source} -> ${target}, directed: ${direction}`);
+            }
+            
+        });
+
+        const elemCounts = calculateNodeCounts(window.parsedData);
+        nodeCountDisplay.textContent = `Node Count: ${elemCounts.nodeCounts.size}`;
+        edgeCountDisplay.textContent = `Edge Count: ${elemCounts.edges.length}`;
+        
+        applyLayout(layoutIcons.value);
+        
+        adjustNodeSizes(elemCounts.nodeCounts);
+        // nodeSizeSlider.disabled = false;
+        nodeSizeSlider.value = 1;
+
+        document.querySelectorAll('.additional-controls').forEach(element => {
+            element.style.display = 'block';
+        });
+    });
+
+    expressionYes.addEventListener('change', function() {
+        if (expressionYes.checked) {
+            expressionContainer.style.display = 'block';
+        }
+    });
+
+    expressionNo.addEventListener('change', function() {
+        if (expressionNo.checked) {
+            expressionContainer.style.display = 'none';
+        }
+    });
+  
+    expressionFileInput.addEventListener('change', function(event) {
+        handleFileUpload(event, function(jsonData) {
+            expressionData = jsonData;
+            // console.log('Expression data:', expressionData);
+        });
+    });
+
+    expressionRunBtn.addEventListener('click', function() {
+        if (!expressionData) {
+            alert('Please select a CSV file for expression values first.');
+            return;
+        }
+
+        const expressionMap = new Map();
+        expressionData.forEach(row => {
+            const node = row['GENE'];
+            const value = parseFloat(row['EXPRESSION']);
+            if (node && !isNaN(value)) {
+                expressionMap.set(node, value);
             }
         });
 
-        applyLayout(layoutIcons.value);
+        const minValue = Math.min(...expressionMap.values());
+        const maxValue = Math.max(...expressionMap.values());
+        
+        console.log("Expression Map:", expressionMap);
+        // console.log("Min Value:", minValue, "Max Value:", maxValue);
+        
 
+        adjustNodeColors(expressionMap, minValue, maxValue);
+        // addNodesAndEdges(expressionData);
     });
+
+
+
+
+    exportBtn.addEventListener('click', function() {
+        const pngData = cy.png();
+        const link = document.createElement('a');
+        link.href = pngData;
+        link.download = 'network.png';
+        link.click();
+    });
+
+ //FUNCTIONS////////////////////////
+ 
+    function applyStyle(style) {
+        // cy.style().clear(); // Clear existing styles
+        cy.style().fromJson(style).update(); // Apply new style
+    }
+    
+    function applyLayout(layoutName) {
+        cy.layout({ name: layoutName }).run();
+    }
+
+    function setDefault() {
+        applyStyle(defaultStyle);
+        styleSelect.value = 'default';
+        layoutIcons.value = 'grid';
+        nodeColorSelect.value = '#666';
+        backgroundSelect.value = '#f0f0f0';
+        fileInput.value = ''
+        nodeSizeSlider.value = 1;
+        // nodeSizeSlider.disabled = true;
+        nodeSearchInput.value = '';
+        fontSelect.value = '#000000';
+        expressionNo.checked = true;
+        expressionYes.checked = false;
+        expressionFileInput.value = '';
+
+    }
+    
+    function adjustNodeSizes(nodeCounts, multiplier = 1) {
+        nodeCounts.forEach((count, node) => {
+            const cyNode = cy.$id(node);
+            if (cyNode.length > 0) {
+                const size = count * 10 * multiplier;
+                cyNode.style('width', size + 'px').style('height', size + 'px');
+            }
+        });
+    }
+
+    function calculateNodeCounts(data) {
+        const nodeCounts = new Map();
+        const edges = []; //not being used
+
+        data.forEach(entry => {
+            if (entry.source && entry.target) {
+                edges.push(entry);
+
+                // Increment edge count for source node
+                nodeCounts.set(entry.source, (nodeCounts.get(entry.source) || 0) + 1);
+                // Increment edge count for target node
+                nodeCounts.set(entry.target, (nodeCounts.get(entry.target) || 0) + 1);
+            }
+        });
+        return {nodeCounts, edges};
+    }
+    
+    function adjustNodeColors(expressionMap, minValue, maxValue) {
+        const nodeColorSelect = document.getElementById('node-color-select').value;
+
+        expressionMap.forEach((value, node) => {
+            const cyNode = cy.$id(node);
+            if (cyNode.length > 0) {
+                const intensity = (value - minValue) / (maxValue - minValue);
+                const rgbaColor = gradientColor('#ffffff', nodeColorSelect, intensity);
+                console.log(`Node: ${node}, Value: ${value}, Intensity: ${intensity}, RGBA Color: ${rgbaColor}`);
+                cyNode.style('background-color', rgbaColor);
+            } else {
+                console.log(`Node ${node} not found in the graph.`);
+            }
+        });
+    }
+
+    function gradientColor(startColor, endColor, percentage) {
+        const startRGB = hexToRGB(startColor);
+        const endRGB = hexToRGB(endColor);
+        const r = startRGB[0] + percentage * (endRGB[0] - startRGB[0]);
+        const g = startRGB[1] + percentage * (endRGB[1] - startRGB[1]);
+        const b = startRGB[2] + percentage * (endRGB[2] - startRGB[2]);
+        return `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;
+    }
+
+    function hexToRGB(hex) {
+        return [
+            parseInt(hex.slice(1, 3), 16),
+            parseInt(hex.slice(3, 5), 16),
+            parseInt(hex.slice(5, 7), 16)
+        ];
+    }
+
+    function handleFileUpload(event, callback) {
+        const file = event.target.files[0];
+        if (!file) return;
+    
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const data = e.target.result;
+            const jsonData = Papa.parse(data, { header: true }).data;
+            callback(jsonData);
+        };
+        reader.readAsText(file);
+    }
 
     setDefault();
 
-    window.addEventListener('resize', function() {
-        cy.resize(); // Resize the cytoscape container
-        cy.layout({ name: 'grid' }).run(); // Run the layout to adjust the network elements
-    });
+
+    // function addNodesAndEdges(data) {
+    //     const nodes = new Set();
+    //     const edges = [];
+
+    //     data.forEach(row => {
+    //         const source = row['source'];
+    //         const target = row['target'];
+    //         const directed = row['direction'] && row['direction'].toLowerCase() === 'true';
+
+
+
+    //         if (source && target) {
+    //             cy.add([
+    //                 { group: 'nodes', data: { id: source } },
+    //                 { group: 'nodes', data: { id: target } },
+    //                 {
+    //                     group: 'edges',
+    //                     data: { id: `${source}-${target}`, source: source, target: target },
+    //                     classes: directed ? 'directed' : ''
+    //                 }
+    //             ]);
+    //             console.log(`FUNCTION - Edge added: ${source} -> ${target}, directed: ${direction}`);
+    //         }
+    //     });
+    //     applyLayout(layoutIcons.value);
+    // }
 });
+
+
+
+
+// tudo a funcionar. ultima sugestao do chat ainda nao foi testada. está no chat -> 
+// para nao ter copdigo repetido na parte das cores no html e tmb ter bolas de cores em vez de combos

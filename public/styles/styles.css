@@ -1,54 +1,173 @@
-/* styles.css */
-#title {
-    text-align: center;
-    padding: 20px 0;
-    background-color: #e4e7c4;
-    color: #000000;
-  }
-#cy{
-    border: 2px solid #ccc;
-    width: 80%;
-    height: 700px;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-40%, -50%);
-}
-#container {
-    position: relative;
-    height: 80vh;
+body {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #f0f0f0;
-}
-#sidebar {
-    position: fixed;
-    top: 120;
-    left: 0;
+    flex-direction: column;
+    margin: 0;
     height: 100vh;
-    width: 300px;
-    /* background-color: #d3d3bd; */
-    color: #000000;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    /* justify-content: center; */
-    /* align-items: center; */
-  }
-      .sidebar-item {
-      margin-top: 20px; /* Adjust the margin as needed */
-    }
-/* #controls {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    display: flex;
-    flex-direction: column;
+    font-family: Arial, sans-serif;
 }
 
-#style-select,
-#layout-select {
+header {
+    text-align: center;
+    padding: 15px 0;
+    background-color: #e4e7c4;
+    color: #000;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.top-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.file-input-container,
+.expression-toggle-container,
+.expression-container,
+.file-export-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.expression-container {
+    display: none;
+}
+
+#container {
+    display: flex;
+    flex-grow: 1;
+    margin-top: 10px;
+    overflow: hidden;
+}
+
+#sidebar {
+    width: 300px;
+    background-color: #f8f9fa;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow-y: auto;
+}
+
+.details-container {
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
     margin-bottom: 10px;
-} */
+    text-align: center;
+}
+
+#menu-btn {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    text-align: center;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    outline: none;
+}
+
+#menu-btn{
+    background-color: #0056b3;
+}
+
+.configurations {
+    display: none;
+}
+
+.sidebar-item {
+    margin-top: 10px;
+}
+
+#cy {
+    flex-grow: 1;
+    border: 2px solid #ccc;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+    margin: 10px;
+    position: relative;
+}
+
+.node-search-container {
+    display: flex;
+    gap: 5px;
+}
+
+#node-search-input {
+    padding: 5px 30px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+    display: flex;
+}
+
+#node-search-btn {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    outline: none;
+}
+
+#node-search-btn{
+    background-color: #0056b3;
+}
+
+input[type="file"], select, input[type="range"] {
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    outline: none;
+    }
+
+button{
+    background-color: #0056b3;
+}
+
+label {
+    margin-right: 10px;
+}
+
+input[type="radio"] + span {
+    margin-right: 10px;
+}
+
+input[type="radio"] + span {
+    background-color: #007bff;
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+#layout-icons, .sidebar-item {
+    display: flex;
+    flex-direction: column;
+    /* align-items: center; */
+    text-align: center;
+}
+
+#layout-icons span, .sidebar-item label {
+    margin-bottom: 10px;
+}
