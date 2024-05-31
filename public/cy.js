@@ -4,12 +4,13 @@ import { defaultStyle, moleculeStyle } from './styles.js';
 let expressionData = null;
 
 document.addEventListener('DOMContentLoaded', function() {
-    const backgroundSelect = document.getElementById('bg-color-select');
-    const fontSelect = document.getElementById('font-color-select');
-    const nodeColorSelect = document.getElementById('node-color-select');
-    const edgeColorSelect = document.getElementById('edge-color-select');
+    const bgColorPicker = document.getElementById('bg-color-picker');
+    const fontColorPicker = document.getElementById('font-color-picker');
+    const nodeColorPicker = document.getElementById('node-color-picker');
+    const edgeColorPicker = document.getElementById('edge-color-picker');
     const styleSelect = document.getElementById('style-select');
     const layoutIcons = document.getElementById('layout-icons');
+    const nodeIcons = document.getElementById('node-icons');
     const nodeSizeSlider = document.getElementById('node-size-slider');
     const nodeSearchInput = document.getElementById('node-search-input');
     const nodeSearchBtn = document.getElementById('node-search-btn');
@@ -47,26 +48,21 @@ document.addEventListener('DOMContentLoaded', function() {
         // cy.layout({ name: 'random' }).run(); // Run the layout to adjust the network elements
     });
 
-    backgroundSelect.addEventListener('change', function() {
-        const bgColor = backgroundSelect.value;
-        // Set the background color of the cy element
-        document.getElementById('cy').style.backgroundColor = bgColor;
+    bgColorPicker.addEventListener('input', function () {
+        document.getElementById('cy').style.backgroundColor = bgColorPicker.value;
     });
 
-    fontSelect.addEventListener('change', function() {
-        const fontColor = fontSelect.value;
-        cy.style().selector('node').css('color', fontColor).update();
+    fontColorPicker.addEventListener('input', function () {
+        cy.style().selector('node').style('color', fontColorPicker.value).update();
     });
 
-    nodeColorSelect.addEventListener('change', function() {
-        const nodeColor = nodeColorSelect.value;
-        cy.style().selector('node').css('background-color', nodeColor).update();
+    nodeColorPicker.addEventListener('input', function () {
+        cy.style().selector('node').style('background-color', nodeColorPicker.value).update();
     });
 
-    edgeColorSelect.addEventListener('change', function() {
-        const edgeColor = edgeColorSelect.value;
-        cy.style().selector('edge').css('line-color', edgeColor).update();
-        cy.style().selector('edge').css('target-arrow-color', edgeColor).update();
+    edgeColorPicker.addEventListener('input', function () {
+        cy.style().selector('edge').style('line-color', edgeColorPicker.value).update();
+        cy.style().selector('edge').style('target-arrow-color', edgeColorPicker.value).update();
     });
 
     styleSelect.addEventListener('click', function() {
@@ -74,11 +70,11 @@ document.addEventListener('DOMContentLoaded', function() {
         switch (selectedStyle) {
             case 'default':
                 applyStyle(defaultStyle);
-                nodeColorSelect.value = '#666';
+                nodeColorPicker.value = '#666666';
                 break;
             case 'molecule':
                 applyStyle(moleculeStyle);
-                nodeColorSelect.value = '#0000ff';
+                nodeColorPicker.value = '#0000ff';
                 break;
             default:
                 break;
@@ -97,6 +93,27 @@ document.addEventListener('DOMContentLoaded', function() {
                 break;
             case 'random-icon':
                 applyLayout('random');
+                break;
+            default:
+                break;
+        }
+    });
+
+    nodeIcons.addEventListener('click', function(event) {
+        const selectedIcon = event.target.id;
+
+        switch (selectedIcon) {
+            case 'circle-icon':
+                applyNodeShape('ellipse');
+                break;
+            case 'triangle-icon':
+                applyNodeShape('triangle');
+                break;
+            case 'rectangle-icon':
+                applyNodeShape('rectangle');
+                break;
+            case 'star-icon':
+                applyNodeShape('star');
                 break;
             default:
                 break;
@@ -244,21 +261,25 @@ document.addEventListener('DOMContentLoaded', function() {
     function applyLayout(layoutName) {
         cy.layout({ name: layoutName }).run();
     }
+    function applyNodeShape(selectedShape) {
+        cy.style().selector('node').style('shape', selectedShape).update();
+    }
 
     function setDefault() {
         applyStyle(defaultStyle);
         styleSelect.value = 'default';
         layoutIcons.value = 'grid';
-        nodeColorSelect.value = '#666';
-        backgroundSelect.value = '#f0f0f0';
+        nodeColorPicker.value = '#666666';
+        bgColorPicker.value = '#f0f0f0';
         fileInput.value = ''
         nodeSizeSlider.value = 1;
-        // nodeSizeSlider.disabled = true;
         nodeSearchInput.value = '';
-        fontSelect.value = '#000000';
+        fontColorPicker.value = '#000000';
         expressionNo.checked = true;
         expressionYes.checked = false;
         expressionFileInput.value = '';
+        edgeColorPicker.value = '#CCCCCC';
+        nodeIcons.value = 'circular'
 
     }
     
@@ -290,7 +311,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function adjustNodeColors(expressionMap, minValue, maxValue) {
-        const nodeColorSelect = document.getElementById('node-color-select').value;
+        const nodeColorSelect = document.getElementById('node-color-picker').value;
 
         expressionMap.forEach((value, node) => {
             const cyNode = cy.$id(node);
@@ -367,7 +388,3 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-
-
-// tudo a funcionar. ultima sugestao do chat ainda nao foi testada. está no chat -> 
-// para nao ter copdigo repetido na parte das cores no html e tmb ter bolas de cores em vez de combos
