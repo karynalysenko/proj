@@ -1,5 +1,10 @@
 // Default style
 const defaultStyle = [
+    {   selector: 'cy',
+        style: {
+            'background-color': '#666'
+        }
+    },
     {
         selector: 'node',
         style: {
@@ -52,5 +57,9 @@ const moleculeStyle = [
         }
     }
 ];
+const stylesBackgroundColor = {
+    default: '#ffffff',   // white
+    molecule: '#ffffe0'   // light yellow
+};
 
-export { defaultStyle, moleculeStyle };
+export { defaultStyle, moleculeStyle, stylesBackgroundColor };

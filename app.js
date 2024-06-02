@@ -15,8 +15,8 @@ app.get('/', (req, res) => {
     res.render('index');
 });
 
-app.get('/about', (req, res) => {
-    res.render('about');
+app.get('/help', (req, res) => {
+    res.render('help');
 }); 
 
 // app.post('/import', (req, res) => {

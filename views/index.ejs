@@ -11,6 +11,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/help">Instructions</a></li>
+        </ul>
+    </nav>
     <header>
         <h1>MY APP</h1>
     </header>
@@ -53,7 +59,7 @@
                     <button id="node-search-btn">Search</button>
                 </div>
             </div>
-            <button id="menu-btn">Menu</button>
+            <button id="menu-btn">Configurations</button>
             <div id="configurations" class="configurations">
                 <div id="layout-icons" class="sidebar-item">
                     <span>Layout type:</span>
@@ -80,6 +86,7 @@
                 <div class="sidebar-item">
                     <label for="style-select">Select pre-defined Style:</label>
                     <select id="style-select">
+                        <option value="new">---</option>
                         <option value="default">Default</option>
                         <option value="molecule">Molecule</option>
                     </select>

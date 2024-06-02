@@ -1,5 +1,5 @@
 // import cytoscape from 'cytoscape';
-import { defaultStyle, moleculeStyle } from './styles.js';
+import { defaultStyle, moleculeStyle, stylesBackgroundColor } from './styles.js';
 
 let expressionData = null;
 
@@ -38,9 +38,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     var cy = window.cy = cytoscape({
         container: document.getElementById('cy'),
+        // style: defaultStyle,
         elements: []
         // layout:{ name : 'grid' },
-        // style: { name: 'default' }
+        // style: 
+        //     { name: 'default' }
     });
 
     window.addEventListener('resize', function() {
@@ -50,6 +52,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     bgColorPicker.addEventListener('input', function () {
         document.getElementById('cy').style.backgroundColor = bgColorPicker.value;
+        // cy.style().selector('cy').style('background-color', bgColorPicker.value).update();
+        
     });
 
     fontColorPicker.addEventListener('input', function () {
@@ -65,16 +69,20 @@ document.addEventListener('DOMContentLoaded', function() {
         cy.style().selector('edge').style('target-arrow-color', edgeColorPicker.value).update();
     });
 
-    styleSelect.addEventListener('click', function() {
+    styleSelect.addEventListener('input', function() {
         const selectedStyle = styleSelect.value;
         switch (selectedStyle) {
             case 'default':
                 applyStyle(defaultStyle);
                 nodeColorPicker.value = '#666666';
+                bgColorPicker.value = '#f0f0f0';
+                cy.container().style.backgroundColor = stylesBackgroundColor.default;
                 break;
             case 'molecule':
                 applyStyle(moleculeStyle);
                 nodeColorPicker.value = '#0000ff';
+                bgColorPicker.value = '#ffffe0';
+                cy.container().style.backgroundColor = stylesBackgroundColor.molecule;
                 break;
             default:
                 break;
@@ -267,7 +275,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function setDefault() {
         applyStyle(defaultStyle);
-        styleSelect.value = 'default';
+        styleSelect.value = 'new';
         layoutIcons.value = 'grid';
         nodeColorPicker.value = '#666666';
         bgColorPicker.value = '#f0f0f0';
@@ -357,8 +365,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     setDefault();
-
-
     // function addNodesAndEdges(data) {
     //     const nodes = new Set();
     //     const edges = [];

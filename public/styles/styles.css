@@ -176,3 +176,36 @@ input[type="radio"] + span {
 }
 
 /*  */
+/* h1 {
+    margin: 0;
+    font-size: 24px;
+} */
+
+nav {
+    display: flex;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+}
+
+nav ul li {
+    margin-left: 20px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: #000;
+    font-size: 16px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+nav ul li a:hover {
+    /* background-color: #ccc; */
+    background-color: #e4e7c4;
+}
