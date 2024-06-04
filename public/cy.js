@@ -27,7 +27,30 @@ document.addEventListener('DOMContentLoaded', function() {
     const menuBtn = document.getElementById('menu-btn');
     const configurations = document.getElementById('configurations');
 
+    const nodeSizeToggleBtn = document.getElementById('node-size-toggle');
+    let proportionalNodeSizeEnabled = false;
+    const nodeSizeOnBtn = document.getElementById('node-size-on');
+    const nodeSizeOffBtn = document.getElementById('node-size-off');
     
+    nodeSizeOnBtn.addEventListener('click', function() {
+        proportionalNodeSizeEnabled = true;
+        console.log(proportionalNodeSizeEnabled);
+    
+        nodeSizeOnBtn.classList.add('selected');
+        nodeSizeOffBtn.classList.remove('selected');
+    
+        adjustNodeSizes(proportionalNodeSizeEnabled, nodeSizeSlider.value);
+    });
+    
+    nodeSizeOffBtn.addEventListener('click', function() {
+        proportionalNodeSizeEnabled = false;
+        console.log(proportionalNodeSizeEnabled);
+    
+        nodeSizeOffBtn.classList.add('selected');
+        nodeSizeOnBtn.classList.remove('selected');
+    
+        adjustNodeSizes(proportionalNodeSizeEnabled, nodeSizeSlider.value);
+    });
     menuBtn.addEventListener('click', () => {
         if (configurations.style.display === 'none' || configurations.style.display === '') {
             configurations.style.display = 'block';
@@ -52,12 +75,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     bgColorPicker.addEventListener('input', function () {
         document.getElementById('cy').style.backgroundColor = bgColorPicker.value;
-        // cy.style().selector('cy').style('background-color', bgColorPicker.value).update();
-        
+        styleSelect.value = 'new';
     });
 
     fontColorPicker.addEventListener('input', function () {
         cy.style().selector('node').style('color', fontColorPicker.value).update();
+        styleSelect.value = 'new';
     });
 
     nodeColorPicker.addEventListener('input', function () {
@@ -67,6 +90,7 @@ document.addEventListener('DOMContentLoaded', function() {
     edgeColorPicker.addEventListener('input', function () {
         cy.style().selector('edge').style('line-color', edgeColorPicker.value).update();
         cy.style().selector('edge').style('target-arrow-color', edgeColorPicker.value).update();
+        styleSelect.value = 'new';
     });
 
     styleSelect.addEventListener('input', function() {
@@ -129,11 +153,9 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     nodeSizeSlider.addEventListener('input', function() {
-        const multiplier = nodeSizeSlider.value;
-        const nodeCounts = calculateNodeCounts(window.parsedData).nodeCounts;
-        adjustNodeSizes(nodeCounts, multiplier);
+        adjustNodeSizes(proportionalNodeSizeEnabled, nodeSizeSlider.value);
     });
-    
+
     nodeSearchBtn.addEventListener('click', function() {
         const searchValue = nodeSearchInput.value.trim();
         if (searchValue) {
@@ -193,8 +215,8 @@ document.addEventListener('DOMContentLoaded', function() {
         edgeCountDisplay.textContent = `Edge Count: ${elemCounts.edges.length}`;
         
         applyLayout(layoutIcons.value);
-        
-        adjustNodeSizes(elemCounts.nodeCounts);
+        adjustNodeSizes(proportionalNodeSizeEnabled, nodeSizeSlider.value);
+
         // nodeSizeSlider.disabled = false;
         nodeSizeSlider.value = 1;
 
@@ -239,13 +261,31 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const minValue = Math.min(...expressionMap.values());
         const maxValue = Math.max(...expressionMap.values());
-        
+        let highestExpressionNode = null;
+        let lowestExpressionNode = null;
+
+        expressionMap.forEach((value, node) => {
+            if (value === maxValue) {
+                highestExpressionNode = node;
+            }
+            if (value === minValue) {
+                lowestExpressionNode = node;
+            }
+        });
+
+        const expressionDetails = document.getElementById('expression-details');
+        expressionDetails.style.display = 'block';
+        const highestNodeDisplay = document.getElementById('highest-expression-node');
+        const lowestNodeDisplay = document.getElementById('lowest-expression-node');
+        highestNodeDisplay.textContent = `Node with highest expression: ${highestExpressionNode} (${maxValue})`;
+        lowestNodeDisplay.textContent = `Node with lowest expression: ${lowestExpressionNode} (${minValue})`;   
+
         console.log("Expression Map:", expressionMap);
         // console.log("Min Value:", minValue, "Max Value:", maxValue);
         
-
         adjustNodeColors(expressionMap, minValue, maxValue);
         // addNodesAndEdges(expressionData);
+
     });
 
 
@@ -271,6 +311,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     function applyNodeShape(selectedShape) {
         cy.style().selector('node').style('shape', selectedShape).update();
+        styleSelect.value = 'new';
     }
 
     function setDefault() {
@@ -290,14 +331,13 @@ document.addEventListener('DOMContentLoaded', function() {
         nodeIcons.value = 'circular'
 
     }
-    
-    function adjustNodeSizes(nodeCounts, multiplier = 1) {
-        nodeCounts.forEach((count, node) => {
-            const cyNode = cy.$id(node);
-            if (cyNode.length > 0) {
-                const size = count * 10 * multiplier;
-                cyNode.style('width', size + 'px').style('height', size + 'px');
-            }
+
+    function adjustNodeSizes(proportional, multiplier) {
+        cy.nodes().forEach(node => {
+            const degree = node.degree();
+            let size = proportional ? 10 * degree * multiplier : 10 * multiplier;
+            node.style('width', size);
+            node.style('height', size);
         });
     }
 
@@ -365,32 +405,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     setDefault();
-    // function addNodesAndEdges(data) {
-    //     const nodes = new Set();
-    //     const edges = [];
 
-    //     data.forEach(row => {
-    //         const source = row['source'];
-    //         const target = row['target'];
-    //         const directed = row['direction'] && row['direction'].toLowerCase() === 'true';
-
-
-
-    //         if (source && target) {
-    //             cy.add([
-    //                 { group: 'nodes', data: { id: source } },
-    //                 { group: 'nodes', data: { id: target } },
-    //                 {
-    //                     group: 'edges',
-    //                     data: { id: `${source}-${target}`, source: source, target: target },
-    //                     classes: directed ? 'directed' : ''
-    //                 }
-    //             ]);
-    //             console.log(`FUNCTION - Edge added: ${source} -> ${target}, directed: ${direction}`);
-    //         }
-    //     });
-    //     applyLayout(layoutIcons.value);
-    // }
 });
 
 

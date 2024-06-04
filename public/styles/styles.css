@@ -57,12 +57,20 @@ header {
 }
 
 .details-container {
-    padding: 2px;
+    padding: 10px; /* Increased padding for better readability */
     background-color: #fff;
     border: 1px solid #ccc;
     border-radius: 5px;
     margin-bottom: 5px;
     text-align: center;
+}
+
+.details-container h4 {
+    margin: 0 0 10px; /* Add some margin below the heading for spacing */
+}
+
+.details-content {
+    text-align: left; /* Align the content to the left */
 }
 
 #menu-btn {
@@ -209,3 +217,31 @@ nav ul li a:hover {
     /* background-color: #ccc; */
     background-color: #e4e7c4;
 }
+
+
+.node-size-toggle-btn {
+    display: inline-block;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    outline: none;
+    transition: background-color 0.3s ease;
+}
+
+.on {
+    background-color: #ccc;
+    color: #000;
+}
+
+.off {
+    background-color: #ccc;
+    color: #000;
+}
+
+.selected {
+    background-color: #007bff;
+    color: #fff;
+}
+
+

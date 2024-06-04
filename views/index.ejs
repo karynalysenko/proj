@@ -51,7 +51,12 @@
             <div id="network-details" class="details-container">
                 <h4>Details about the network</h4>
                 <span id="node-count"></span>
+                <br>
                 <span id="edge-count"></span>
+                <div id="expression-details" style="display: none;">
+                    <p id="highest-expression-node">Node with highest expression: </p>
+                    <p id="lowest-expression-node">Node with lowest expression: </p>
+                </div>
             </div>
             <div class="sidebar-item">
                 <div class="node-search-container">
@@ -79,6 +84,11 @@
 
                     </div>
                 </div>
+                <div class="sidebar-item">
+                    <label for="node-size-toggle">Proportional Node Size:</label>
+                        <div id="node-size-on" class="node-size-toggle-btn on">ON</div>
+                        <div id="node-size-off" class="node-size-toggle-btn off">OFF</div>
+                </div>                
                 <div class="sidebar-item">
                     <label for="node-size-slider">Node Size: </label>
                     <input type="range" id="node-size-slider" min="1" max="5" value="2">
