@@ -3,6 +3,7 @@ import { defaultStyle, moleculeStyle, stylesBackgroundColor } from './styles.js'
 
 let expressionData = null;
 
+
 document.addEventListener('DOMContentLoaded', function() {
     const bgColorPicker = document.getElementById('bg-color-picker');
     const fontColorPicker = document.getElementById('font-color-picker');
@@ -19,22 +20,21 @@ document.addEventListener('DOMContentLoaded', function() {
     const nodeCountDisplay = document.getElementById('node-count');
     const edgeCountDisplay = document.getElementById('edge-count');
     const exportBtn = document.getElementById('export-btn');
-    const expressionYes = document.getElementById('expression-yes');
-    const expressionNo = document.getElementById('expression-no');
-    const expressionContainer = document.getElementById('expression-container');
+    // const expressionYes = document.getElementById('expression-yes');
+    // const expressionNo = document.getElementById('expression-no');
+    // const expressionContainer = document.getElementById('expression-container');
     const expressionFileInput = document.getElementById('expression-file-input');
     const expressionRunBtn = document.getElementById('expression-run-btn');
     const menuBtn = document.getElementById('menu-btn');
     const configurations = document.getElementById('configurations');
 
-    const nodeSizeToggleBtn = document.getElementById('node-size-toggle');
+    // const nodeSizeToggleBtn = document.getElementById('node-size-toggle');
     let proportionalNodeSizeEnabled = false;
     const nodeSizeOnBtn = document.getElementById('node-size-on');
     const nodeSizeOffBtn = document.getElementById('node-size-off');
     
     nodeSizeOnBtn.addEventListener('click', function() {
         proportionalNodeSizeEnabled = true;
-        console.log(proportionalNodeSizeEnabled);
     
         nodeSizeOnBtn.classList.add('selected');
         nodeSizeOffBtn.classList.remove('selected');
@@ -51,6 +51,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
         adjustNodeSizes(proportionalNodeSizeEnabled, nodeSizeSlider.value);
     });
+
     menuBtn.addEventListener('click', () => {
         if (configurations.style.display === 'none' || configurations.style.display === '') {
             configurations.style.display = 'block';
@@ -61,16 +62,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     var cy = window.cy = cytoscape({
         container: document.getElementById('cy'),
-        // style: defaultStyle,
         elements: []
-        // layout:{ name : 'grid' },
-        // style: 
-        //     { name: 'default' }
+
     });
 
     window.addEventListener('resize', function() {
-        cy.resize(); // Resize the cytoscape container
-        // cy.layout({ name: 'random' }).run(); // Run the layout to adjust the network elements
+        cy.resize(); 
     });
 
     bgColorPicker.addEventListener('input', function () {
@@ -85,6 +82,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     nodeColorPicker.addEventListener('input', function () {
         cy.style().selector('node').style('background-color', nodeColorPicker.value).update();
+        
+        if (expressionData){
+            updateNodeColorsBasedOnExpression(expressionData);
+        }
     });
 
     edgeColorPicker.addEventListener('input', function () {
@@ -99,24 +100,34 @@ document.addEventListener('DOMContentLoaded', function() {
             case 'default':
                 applyStyle(defaultStyle);
                 nodeColorPicker.value = '#666666';
-                bgColorPicker.value = '#f0f0f0';
+                bgColorPicker.value = '#ffffff';
+                edgeColorPicker.value = '#cccccc';
+                fontColorPicker.value = '#000000';
                 cy.container().style.backgroundColor = stylesBackgroundColor.default;
                 break;
             case 'molecule':
                 applyStyle(moleculeStyle);
                 nodeColorPicker.value = '#0000ff';
                 bgColorPicker.value = '#ffffe0';
+                edgeColorPicker.value = '#ff0000';
+                fontColorPicker.value = '#9962a9';
                 cy.container().style.backgroundColor = stylesBackgroundColor.molecule;
                 break;
             default:
                 break;
+            
+        }
+        if (expressionData){
+            updateNodeColorsBasedOnExpression(expressionData);
         }
     });
 
     layoutIcons.addEventListener('click', function(event) {
-        const selectedIcon = event.target.id;
+        const selectedIcon = event.target.closest('button');
+        document.querySelectorAll('.layout-icon-group .btn').forEach(btn => btn.classList.remove('active'));
+        selectedIcon.classList.add('active');
 
-        switch (selectedIcon) {
+        switch (selectedIcon.id) {
             case 'grid-icon':
                 applyLayout('grid');
                 break;
@@ -132,10 +143,12 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     nodeIcons.addEventListener('click', function(event) {
-        const selectedIcon = event.target.id;
+        const selectedIcon = event.target.closest('button');
+        document.querySelectorAll('.node-icon-group .btn').forEach(btn => btn.classList.remove('active'));
+        selectedIcon.classList.add('active');
 
-        switch (selectedIcon) {
-            case 'circle-icon':
+        switch (selectedIcon.id) {
+            case 'ellipse-icon':
                 applyNodeShape('ellipse');
                 break;
             case 'triangle-icon':
@@ -213,29 +226,29 @@ document.addEventListener('DOMContentLoaded', function() {
         const elemCounts = calculateNodeCounts(window.parsedData);
         nodeCountDisplay.textContent = `Node Count: ${elemCounts.nodeCounts.size}`;
         edgeCountDisplay.textContent = `Edge Count: ${elemCounts.edges.length}`;
-        
+        // console.log(layoutIcons.value)
         applyLayout(layoutIcons.value);
         adjustNodeSizes(proportionalNodeSizeEnabled, nodeSizeSlider.value);
 
         // nodeSizeSlider.disabled = false;
         nodeSizeSlider.value = 1;
 
-        document.querySelectorAll('.additional-controls').forEach(element => {
-            element.style.display = 'block';
-        });
+        // document.querySelectorAll('.additional-controls').forEach(element => {
+        //     element.style.display = 'block';
+        // });
     });
 
-    expressionYes.addEventListener('change', function() {
-        if (expressionYes.checked) {
-            expressionContainer.style.display = 'block';
-        }
-    });
+    // expressionYes.addEventListener('change', function() {
+    //     if (expressionYes.checked) {
+    //         expressionContainer.style.display = 'block';
+    //     }
+    // });
 
-    expressionNo.addEventListener('change', function() {
-        if (expressionNo.checked) {
-            expressionContainer.style.display = 'none';
-        }
-    });
+    // expressionNo.addEventListener('change', function() {
+    //     if (expressionNo.checked) {
+    //         expressionContainer.style.display = 'none';
+    //     }
+    // });
   
     expressionFileInput.addEventListener('change', function(event) {
         handleFileUpload(event, function(jsonData) {
@@ -250,86 +263,108 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        const expressionMap = new Map();
-        expressionData.forEach(row => {
-            const node = row['GENE'];
-            const value = parseFloat(row['EXPRESSION']);
-            if (node && !isNaN(value)) {
-                expressionMap.set(node, value);
+        const expressionElem = updateNodeColorsBasedOnExpression(expressionData)
+
+        let highestExpressionNodes = [];
+        let lowestExpressionNodes = [];
+
+        expressionElem.expressionMap.forEach((value, node) => {
+            if (value === expressionElem.maxValue) {
+                highestExpressionNodes.push(node);
+            }
+            if (value === expressionElem.minValue) {
+                lowestExpressionNodes.push(node);
             }
         });
 
-        const minValue = Math.min(...expressionMap.values());
-        const maxValue = Math.max(...expressionMap.values());
-        let highestExpressionNode = null;
-        let lowestExpressionNode = null;
-
-        expressionMap.forEach((value, node) => {
-            if (value === maxValue) {
-                highestExpressionNode = node;
-            }
-            if (value === minValue) {
-                lowestExpressionNode = node;
-            }
-        });
-
+        const topHighestExpressionNodes = highestExpressionNodes.slice(0, 3);
+        const topLowestExpressionNodes = lowestExpressionNodes.slice(0, 3);
+        
         const expressionDetails = document.getElementById('expression-details');
         expressionDetails.style.display = 'block';
         const highestNodeDisplay = document.getElementById('highest-expression-node');
         const lowestNodeDisplay = document.getElementById('lowest-expression-node');
-        highestNodeDisplay.textContent = `Node with highest expression: ${highestExpressionNode} (${maxValue})`;
-        lowestNodeDisplay.textContent = `Node with lowest expression: ${lowestExpressionNode} (${minValue})`;   
+        highestNodeDisplay.innerHTML = `Top 3 nodes with highest expression: <br>(${expressionElem.maxValue})<br>${topHighestExpressionNodes}`;
+        lowestNodeDisplay.innerHTML = `Top 3 nodes lowest expression: <br>(${expressionElem.minValue})<br>${topLowestExpressionNodes}`;   
 
-        console.log("Expression Map:", expressionMap);
-        // console.log("Min Value:", minValue, "Max Value:", maxValue);
+        console.log("Expression Map:", expressionElem.expressionMap);
         
-        adjustNodeColors(expressionMap, minValue, maxValue);
-        // addNodesAndEdges(expressionData);
-
     });
 
-
-
-
     exportBtn.addEventListener('click', function() {
-        const pngData = cy.png();
+        const pngData = cy.png({
+            bg: bgColorPicker.value
+        });
         const link = document.createElement('a');
         link.href = pngData;
         link.download = 'network.png';
         link.click();
     });
 
+
  //FUNCTIONS////////////////////////
  
     function applyStyle(style) {
         // cy.style().clear(); // Clear existing styles
-        cy.style().fromJson(style).update(); // Apply new style
+        cy.style().fromJson(style).update();
+        
+        // tentativa de automatizar
+        // let style;
+        // let backgroundColor;
+
+        // switch(styleName) {
+        //     case 'default':
+        //         style = defaultStyle;
+        //         backgroundColor = stylesBackgroundColor.default;
+        //         break;
+        //     case 'molecule':
+        //         style = moleculeStyle;
+        //         backgroundColor = stylesBackgroundColor.molecule;
+        //         break;
+        //     default:
+        //        break;
+        // }
+
+        // // Apply the new style to the cytoscape instance
+        // cy.style().fromJson(style).update();
+
+        // // Extract the background color for nodes from the style
+        // const nodeStyle = style.find(s => s.selector === 'node');
+        // const nodeBackgroundColor = nodeStyle?.style['background-color'];
+
+        // // Set the node color picker value to the extracted background color
+        // nodeColorPicker.value = nodeBackgroundColor;
     }
     
     function applyLayout(layoutName) {
         cy.layout({ name: layoutName }).run();
     }
+
     function applyNodeShape(selectedShape) {
         cy.style().selector('node').style('shape', selectedShape).update();
-        styleSelect.value = 'new';
+        if (selectedShape !== 'ellipse'){
+            styleSelect.value = 'new';
+        }
     }
 
     function setDefault() {
-        applyStyle(defaultStyle);
-        styleSelect.value = 'new';
+        styleSelect.value = 'default';
         layoutIcons.value = 'grid';
         nodeColorPicker.value = '#666666';
-        bgColorPicker.value = '#f0f0f0';
-        fileInput.value = ''
+        bgColorPicker.value = '#ffffff';
+        fileInput.value = '';
         nodeSizeSlider.value = 1;
         nodeSearchInput.value = '';
         fontColorPicker.value = '#000000';
-        expressionNo.checked = true;
-        expressionYes.checked = false;
+        // expressionNo.checked = true;
+        // expressionYes.checked = false;
         expressionFileInput.value = '';
         edgeColorPicker.value = '#CCCCCC';
         nodeIcons.value = 'circular'
-
+        document.getElementById('grid-icon').click(); 
+        document.getElementById('ellipse-icon').click();
+        nodeSizeOffBtn.classList.add('selected');
+        applyStyle(defaultStyle);
     }
 
     function adjustNodeSizes(proportional, multiplier) {
@@ -404,8 +439,26 @@ document.addEventListener('DOMContentLoaded', function() {
         reader.readAsText(file);
     }
 
-    setDefault();
+    function updateNodeColorsBasedOnExpression(expressionData) {
+        const expressionMap = new Map();
+        expressionData.forEach(row => {
+            const node = row['GENE'];
+            const value = parseFloat(row['EXPRESSION']);
+            if (node && !isNaN(value)) {
+                expressionMap.set(node, value);
+            }
+        });
 
+        const minValue = Math.min(...expressionMap.values());
+        const maxValue = Math.max(...expressionMap.values());
+
+        adjustNodeColors(expressionMap, minValue, maxValue);
+        return{expressionMap, minValue, maxValue};
+    }
+    
+    setDefault();
+    
 });
 
 
+// comecei a tentar automatizar a mudança de estilos , para nao ter de colocar as cores das ferramentas por hardcoding como está de momento

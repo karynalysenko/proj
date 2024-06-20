@@ -1,10 +1,5 @@
 // Default style
 const defaultStyle = [
-    {   selector: 'cy',
-        style: {
-            'background-color': '#666'
-        }
-    },
     {
         selector: 'node',
         style: {
@@ -44,7 +39,8 @@ const moleculeStyle = [
             'shape': 'rectangle',
             'label': 'data(id)',
             'border-width': 2,
-            'border-color': '#000'
+            'border-color': '#000',
+            'color': '#9962A9'
         }
     },
     {

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MY APP</title>
+    <title>NetViewer</title>
     <script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <link rel="stylesheet" href="styles/styles.css">
@@ -13,112 +13,121 @@
 <body>
     <nav>
         <ul>
-            <li><a href="/">Home</a></li>
-            <li><a href="/help">Instructions</a></li>
+            <li><a href="/" aria-label="Home"><span class="mdi mdi-home"></span></a></li>
+            <li><a href="/help" aria-label="Help"><span class="mdi mdi-head-question"></span></a></li>
         </ul>
     </nav>
     <header>
-        <h1>MY APP</h1>
+        <h1>NetViewer</h1>
+
     </header>
-    <div class="top-container">
-        <div class="file-input-container">
-            <label for="file-input">Import csv file:</label>
-            <input type="file" id="file-input" accept=".csv">
-            <button id="run-btn">Import</button>
-        </div>
-        <div class="expression-toggle-container">
-            <span>Add Expression Values:</span>
-            <label>
-                <input type="radio" name="expression" value="yes" id="expression-yes">
-                <span>Yes</span>
-            </label>
-            <label>
-                <input type="radio" name="expression" value="no" id="expression-no" checked>
-                <span>No</span>
-            </label>
-        </div>
-        <div class="expression-container" id="expression-container">
-            <label for="expression-file-input">Import csv file:</label>
-            <input type="file" id="expression-file-input" accept=".csv">
-            <button id="expression-run-btn">Run expression values</button>
-        </div>
-        <div class="file-export-container">
-            <button id="export-btn">Export as PNG</button>
-        </div>
-    </div>
+    <div class="top-container"></div>
     <div id="container">
         <aside id="sidebar">
+            <span>Import</span>
+            <div class="file-input-container">
+                <div class="inline-form">
+                    <label for="file-input">Graph</label>
+                    <input type="file" id="file-input" accept=".csv" style="width: 190px" >
+                    <button id="run-btn"><span class="mdi mdi-import"></span></button>
+                </div>
+            </div>
+            <div class="file-input-container">
+                <div class="inline-form">
+                    <label for="file-input">Expression</label>
+                    <input type="file" label= "import" id="expression-file-input" accept=".csv" style="width: 190px" >
+                    <button id="expression-run-btn"><span class="mdi mdi-import"></span></button>
+                </div>
+            </div>
             <div id="network-details" class="details-container">
                 <h4>Details about the network</h4>
                 <span id="node-count"></span>
                 <br>
                 <span id="edge-count"></span>
                 <div id="expression-details" style="display: none;">
-                    <p id="highest-expression-node">Node with highest expression: </p>
-                    <p id="lowest-expression-node">Node with lowest expression: </p>
+                    <p id="highest-expression-node"></p>
+                    <p id="lowest-expression-node"></p>
                 </div>
             </div>
             <div class="sidebar-item">
                 <div class="node-search-container">
                     <input type="text" id="node-search-input" placeholder="Search Node">
-                    <button id="node-search-btn">Search</button>
+                    <button id="node-search-btn"><span class="mdi mdi-magnify"></span></button>
                 </div>
             </div>
-            <button id="menu-btn">Configurations</button>
+            <button id="menu-btn"><span class="mdi mdi-menu"></span></button>
             <div id="configurations" class="configurations">
                 <div id="layout-icons" class="sidebar-item">
-                    <span>Layout type:</span>
+                    <label>Layout type:</label>
                     <div class="layout-icon-group">
-                        <span id="grid-icon" class="mdi mdi-dots-grid"></span>
-                        <span id="circle-icon" class="mdi mdi-dots-circle"></span>
-                        <span id="random-icon" class="fa fa-random"></span>
+                        <button class="btn" id="grid-icon"><i class="mdi mdi-dots-grid"></i></button>
+                        <button class="btn" id="circle-icon"><i class="mdi mdi-dots-circle"></i></button>
+                        <button class="btn" id="random-icon"><i class="fa fa-random"></i></button>
                     </div>
                 </div>
                 <div id="node-icons" class="sidebar-item">
-                    <span>Node shape:</span>
+                    <label>Node shape:</label>
                     <div class="node-icon-group">
-                        <span id="circle-icon" class="mdi mdi-circle-outline"></span>
-                        <span id="triangle-icon" class="mdi mdi-triangle-outline"></span>
-                        <span id="rectangle-icon" class="mdi mdi-rectangle-outline"></span>
-                        <span id="star-icon" class="mdi mdi-star-outline"></span>
-
+                        <button class="btn" id="ellipse-icon"><i class="mdi mdi-circle-outline"></i></button>
+                        <button class="btn" id="triangle-icon"><i class="mdi mdi-triangle-outline"></i></button>
+                        <button class="btn" id="rectangle-icon"><i class="mdi mdi-rectangle-outline"></i></button>
+                        <button class="btn" id="star-icon"><i class="mdi mdi-star-outline"></i></button>
                     </div>
                 </div>
                 <div class="sidebar-item">
-                    <label for="node-size-toggle">Proportional Node Size:</label>
-                        <div id="node-size-on" class="node-size-toggle-btn on">ON</div>
-                        <div id="node-size-off" class="node-size-toggle-btn off">OFF</div>
-                </div>                
-                <div class="sidebar-item">
-                    <label for="node-size-slider">Node Size: </label>
+                    <label for="node-size-slider">Proportional node size:</label>
+                    <br>
                     <input type="range" id="node-size-slider" min="1" max="5" value="2">
                 </div>
                 <div class="sidebar-item">
+                    <!-- <div class="inline-form"> -->
+                        <label for="node-size-toggle">Connected node size:</label>
+                        <div id="node-size-on" class="node-size-toggle-btn on">ON</div>
+                        <div id="node-size-off" class="node-size-toggle-btn off">OFF</div>
+                    <!-- </div> -->
+                </div>                
+                <div class="sidebar-item">
+                    <label>Colors</label>
+                    <br>
+                    <br>
+                    <div class="inline-form">
+                        <label for="font-color-picker">Font:</label>
+                        <input type="color" id="font-color-picker" value="#000000">
+                    </div>
+                </div>
+                <div class="sidebar-item">
+                    <div class="inline-form">
+                        <label for="node-color-picker">Node:</label>
+                        <input type="color" id="node-color-picker" value="#666666">
+                    </div>
+                </div>
+                <div class="sidebar-item">
+                    <div class="inline-form">
+                        <label for="edge-color-picker">Edge:</label>
+                        <input type="color" id="edge-color-picker" value="#cccccc">
+                    </div>
+                </div>
+                <div class="sidebar-item">
+                    <div class="inline-form">
+                        <label for="bg-color-picker">Background:</label>
+                        <input type="color" id="bg-color-picker" value="#f0f0f0">
+                    </div>
+                </div>
+                <div class="sidebar-item">
                     <label for="style-select">Select pre-defined Style:</label>
+                    <br>
+                    <br>
                     <select id="style-select">
-                        <option value="new">---</option>
                         <option value="default">Default</option>
                         <option value="molecule">Molecule</option>
-                    </select>
-                </div>
-                <div class="sidebar-item">
-                    <label for="font-color-picker">Font color:</label>
-                    <input type="color" id="font-color-picker" value="#000000">
-                </div>
-                <div class="sidebar-item">
-                    <label for="node-color-picker">Node color:</label>
-                    <input type="color" id="node-color-picker" value="#666666">
-                </div>
-                <div class="sidebar-item">
-                    <label for="edge-color-picker">Edge color:</label>
-                    <input type="color" id="edge-color-picker" value="#cccccc">
-                </div>
-                <div class="sidebar-item">
-                    <label for="bg-color-picker">Background Color:</label>
-                    <input type="color" id="bg-color-picker" value="#f0f0f0">
-                </div>
+                        <option value="new">---</option>
 
-                
+                    </select>
+                </div>              
+            </div>
+            <div class="file-export-container">
+                <button class="btn-toggle" id="export-btn" aria-label="Export PNG"><i class="mdi mdi-image-check-outline"></i></button>
+
             </div>
         </aside>
         <main id="cy"></main>

@@ -3,35 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Instructions - MY APP</title>
+    <title>Instructions - NetViewer</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js/dist/reveal.css">
     <link rel="stylesheet" href="styles/styles.css">
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font/css/materialdesignicons.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js/dist/theme/white.css" id="theme">
 </head>
 <body>
     <nav>
         <ul>
-            <li><a href="/">Home</a></li>
-            <li><a href="/help">Instructions</a></li>
+            <li><a href="/" aria-label="Home"><span class="mdi mdi-home"></span></a></li>
+            <li><a href="/help" aria-label="Help"><span class="mdi mdi-head-question"></span></a></li>
         </ul>
     </nav>
+    <header>
+        <h1>NetViewer</h1>
+    </header>
+    <div class="top-container"></div>
     <div class="reveal">
         <div class="slides">
             <section>
-                <h2>Slide 1</h2>
-                <p>Introduction to the app.</p>
+                <h2>Welcome!</h2>
+                <p>Here are presented the instructions of usage of NetViewer. 
+                    It is meant to visualize networks of any molecule (mainly genes or proteins). However, it can also be used for other purposes, 
+                    as the app do not differentiate the content of the imported file. This web app is based on Cytoscape.js</p>
             </section>
             <section>
-                <h2>Slide 2</h2>
-                <p>How to import data.</p>
+                <h2>How to use</h2>
+                    <video width="1000" controls>
+                        <source src="src/howto.webm" type="video/webm">
+                    </video>
             </section>
+            <section>
+                <h2>Requiriments</h2>
+                <table class="invisible-table">
+                    <tr>
+                        <td class="text-column"><li>Only .csv files</li></td>
+                    </tr>
+                    <tr>
+                        <td class="text-column"><li>Main file: should contain mandatorily 2 columns</li></td>
+                        <td class="image-column"><img src="src/source-target.png" alt="png1"></td>
+                    </tr>
+                    <tr>
+                        <td><li>Expression file: should contain mandatorily 2 columns. 
+                            In order to see the expression data visually, you must 1st upload the main file. Otherwise, only the 'Details about the network' will display information</li></td>
+                        <td class="image-column"><img src="src/example2.png" alt="png2"></td>
+                    </tr>
+                    <tr>
+                        <td class="text-column"><li>In case, user wants to visualize directed network, then a 3rd column called 'directed' should be added in the main file, whereas the value 'true' 
+                            will show the corresponding arrow, and 'false' or null values will not display any arrow</li></td>
+                        <td class="image-column"><img src="src/example3.png" alt="png3"></td>
+                    </tr>
+
+
+                </table>
+            </section>
+            <section>
+                <h2>Notes</h2>
+                <li>'Connected node size' turned ON will display the sizes of the nodes in order of the number of edge connections. So, the node will
+                    be as big as the higher is the number of connections, and vice-versa.</li>
+                <li>'Proportional node size' slider, even if the 'Connected node size' is activated, will display a multiplied size of the node between 2-5x bigger.</li>
+                <li>Examples of pre-defined styles were prepared, and can be used at any time.</li>
+                <li>When Expression data is imported, automatically, the node's color styling will change to a gradient style, where the lightest color is the less expressive 
+                    molecule and the darkest is the most expressive one.
+                </li>
+                <li>It is possible to export the prepared network, only as PNG.</li>
+            </section>
+
             <!-- Add more slides as needed -->
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/reveal.js/dist/reveal.min.js"></script>
     <script>
-        Reveal.initialize();
+        Reveal.initialize({ 
+            slideNumber: 'c/t', 
+            width: 960,
+            height: 600});
     </script>
 </body>
 </html>
