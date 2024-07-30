@@ -8,7 +8,7 @@ app.set('view engine', 'ejs');
 app.listen(port, () => {
     console.log(`App running on port ${port}`)
 });
-// é um middleware. o que estiver aqui dentro, será acessivel publicamente(no broweser)
+// é um middleware. o que estiver aqui dentro, será acessivel publicamente(no browser)
 app.use(express.static('public'));
 
 app.get('/', (req, res) => {

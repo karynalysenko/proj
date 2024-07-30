@@ -1,8 +1,7 @@
-// import cytoscape from 'cytoscape';
+
 import { defaultStyle, moleculeStyle, stylesBackgroundColor } from './styles.js';
 
 let expressionData = null;
-
 
 document.addEventListener('DOMContentLoaded', function() {
     const bgColorPicker = document.getElementById('bg-color-picker');
@@ -20,19 +19,20 @@ document.addEventListener('DOMContentLoaded', function() {
     const nodeCountDisplay = document.getElementById('node-count');
     const edgeCountDisplay = document.getElementById('edge-count');
     const exportBtn = document.getElementById('export-btn');
-    // const expressionYes = document.getElementById('expression-yes');
-    // const expressionNo = document.getElementById('expression-no');
-    // const expressionContainer = document.getElementById('expression-container');
     const expressionFileInput = document.getElementById('expression-file-input');
     const expressionRunBtn = document.getElementById('expression-run-btn');
     const menuBtn = document.getElementById('menu-btn');
     const configurations = document.getElementById('configurations');
-
-    // const nodeSizeToggleBtn = document.getElementById('node-size-toggle');
     let proportionalNodeSizeEnabled = false;
     const nodeSizeOnBtn = document.getElementById('node-size-on');
     const nodeSizeOffBtn = document.getElementById('node-size-off');
+    var modal = document.getElementById("modal");
+    var span = document.getElementsByClassName("close")[0];
     
+    var cy = window.cy = cytoscape({
+        container: document.getElementById('cy')
+    });
+
     nodeSizeOnBtn.addEventListener('click', function() {
         proportionalNodeSizeEnabled = true;
     
@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     nodeSizeOffBtn.addEventListener('click', function() {
         proportionalNodeSizeEnabled = false;
-        console.log(proportionalNodeSizeEnabled);
+        // console.log(proportionalNodeSizeEnabled);
     
         nodeSizeOffBtn.classList.add('selected');
         nodeSizeOnBtn.classList.remove('selected');
@@ -58,12 +58,6 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             configurations.style.display = 'none';
         }
-    });
-
-    var cy = window.cy = cytoscape({
-        container: document.getElementById('cy'),
-        elements: []
-
     });
 
     window.addEventListener('resize', function() {
@@ -188,9 +182,9 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     fileInput.addEventListener('change', function(event) {
-        handleFileUpload(event, function(jsonData) {
+        handleFileUpload(event, 'main Graph', function(jsonData) {
             window.parsedData = jsonData;
-            // console.log('Parsed data:', window.parsedData);
+    
         });
     });
 
@@ -238,20 +232,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // });
     });
 
-    // expressionYes.addEventListener('change', function() {
-    //     if (expressionYes.checked) {
-    //         expressionContainer.style.display = 'block';
-    //     }
-    // });
-
-    // expressionNo.addEventListener('change', function() {
-    //     if (expressionNo.checked) {
-    //         expressionContainer.style.display = 'none';
-    //     }
-    // });
-  
     expressionFileInput.addEventListener('change', function(event) {
-        handleFileUpload(event, function(jsonData) {
+        handleFileUpload(event,'Expression', function(jsonData) {
             expressionData = jsonData;
             // console.log('Expression data:', expressionData);
         });
@@ -291,6 +273,18 @@ document.addEventListener('DOMContentLoaded', function() {
         
     });
 
+
+
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+
     exportBtn.addEventListener('click', function() {
         const pngData = cy.png({
             bg: bgColorPicker.value
@@ -303,37 +297,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
  //FUNCTIONS////////////////////////
+    function setDefault() {
+        styleSelect.value = 'default';
+        layoutIcons.value = 'grid';
+        nodeColorPicker.value = '#666666';
+        bgColorPicker.value = '#ffffff';
+        fileInput.value = '';
+        nodeSizeSlider.value = 1;
+        nodeSearchInput.value = '';
+        fontColorPicker.value = '#000000';
+        expressionFileInput.value = '';
+        edgeColorPicker.value = '#CCCCCC';
+        nodeIcons.value = 'circular'
+        document.getElementById('grid-icon').click(); 
+        document.getElementById('ellipse-icon').click();
+        nodeSizeOffBtn.classList.add('selected');
+        applyStyle(defaultStyle);
+    }
  
     function applyStyle(style) {
         // cy.style().clear(); // Clear existing styles
         cy.style().fromJson(style).update();
-        
-        // tentativa de automatizar
-        // let style;
-        // let backgroundColor;
-
-        // switch(styleName) {
-        //     case 'default':
-        //         style = defaultStyle;
-        //         backgroundColor = stylesBackgroundColor.default;
-        //         break;
-        //     case 'molecule':
-        //         style = moleculeStyle;
-        //         backgroundColor = stylesBackgroundColor.molecule;
-        //         break;
-        //     default:
-        //        break;
-        // }
-
-        // // Apply the new style to the cytoscape instance
-        // cy.style().fromJson(style).update();
-
-        // // Extract the background color for nodes from the style
-        // const nodeStyle = style.find(s => s.selector === 'node');
-        // const nodeBackgroundColor = nodeStyle?.style['background-color'];
-
-        // // Set the node color picker value to the extracted background color
-        // nodeColorPicker.value = nodeBackgroundColor;
     }
     
     function applyLayout(layoutName) {
@@ -345,26 +329,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (selectedShape !== 'ellipse'){
             styleSelect.value = 'new';
         }
-    }
-
-    function setDefault() {
-        styleSelect.value = 'default';
-        layoutIcons.value = 'grid';
-        nodeColorPicker.value = '#666666';
-        bgColorPicker.value = '#ffffff';
-        fileInput.value = '';
-        nodeSizeSlider.value = 1;
-        nodeSearchInput.value = '';
-        fontColorPicker.value = '#000000';
-        // expressionNo.checked = true;
-        // expressionYes.checked = false;
-        expressionFileInput.value = '';
-        edgeColorPicker.value = '#CCCCCC';
-        nodeIcons.value = 'circular'
-        document.getElementById('grid-icon').click(); 
-        document.getElementById('ellipse-icon').click();
-        nodeSizeOffBtn.classList.add('selected');
-        applyStyle(defaultStyle);
     }
 
     function adjustNodeSizes(proportional, multiplier) {
@@ -426,15 +390,34 @@ document.addEventListener('DOMContentLoaded', function() {
         ];
     }
 
-    function handleFileUpload(event, callback) {
+    function handleFileUpload(event, typeFile, callback) {
         const file = event.target.files[0];
-        if (!file) return;
-    
         const reader = new FileReader();
-        reader.onload = function(e) {
-            const data = e.target.result;
-            const jsonData = Papa.parse(data, { header: true }).data;
-            callback(jsonData);
+        if (!file) return;
+        
+        reader.onload = function(event) {
+            const data = event.target.result;
+            
+            try {
+                const parsedData = Papa.parse(data, {
+                    header: true,
+                    dynamicTyping: true,
+                    skipEmptyLines: true
+                });
+    
+                if (parsedData.errors.length) {
+                    throw new Error(parsedData.errors.map(e => e.message).join(', '));
+                }
+    
+                // console.log('Parsed Data:', parsedData.data);
+                if (validateFile(parsedData.data, typeFile)) {
+                    callback(parsedData.data);
+                } else {
+                    showModal('The file does not meet the requirements for the ' + typeFile + ' file.');
+                }
+            } catch (error) {
+                showModal('The file could not be parsed: ' + error.message);
+            }
         };
         reader.readAsText(file);
     }
@@ -455,10 +438,47 @@ document.addEventListener('DOMContentLoaded', function() {
         adjustNodeColors(expressionMap, minValue, maxValue);
         return{expressionMap, minValue, maxValue};
     }
-    
+
+    function showModal(message) {
+        var modalMessage = document.getElementById("modal-message");
+        modalMessage.textContent = message;
+        modal.style.display = "block";
+    }
+
+    function validateFile(jsonData, typeFile) {
+        if (typeFile === 'main Graph') {
+            for (let row of jsonData) {
+                if (!row.hasOwnProperty('source') || !row.hasOwnProperty('target')) {
+                    return false;
+                }
+                if (row.hasOwnProperty('directed')) {
+                    if (row.directed === null) {
+                        row.directed = 'false'; // Treat null as 'false'
+                    } else if (typeof row.directed === 'boolean') {
+                        row.directed = row.directed.toString(); // Convert boolean to string
+                    } else if (typeof row.directed !== 'string' || 
+                        (row.directed.toLowerCase() !== 'true' && row.directed.toLowerCase() !== 'false')) {
+                            return false;
+                    }
+                }
+            }
+        } else if (typeFile === 'Expression') {
+            for (let row of jsonData) {
+                if (!row.hasOwnProperty('GENE') || !row.hasOwnProperty('EXPRESSION')) {
+                    return false;
+                
+                } else if (typeof row.EXPRESSION !== 'number'){
+                    showModal('The EXPRESSION values must be only numbers!');
+                    // return false;
+                }
+            }
+        } else {
+            // Unsupported file type
+            return false;
+        }
+        return true;
+    }
     setDefault();
     
 });
 
-
-// comecei a tentar automatizar a mudança de estilos , para nao ter de colocar as cores das ferramentas por hardcoding como está de momento
