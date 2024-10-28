@@ -1,0 +1,5 @@
+source,target,directed
+YKR026C,YGL122C,false
+YGR218W,YGL097W,true
+YGL097W,YOR204W,
+YGL122C,YOR204W,true
