@@ -31,10 +31,10 @@ NetViewer contains three pages: Home, Help and 'Not found'. 'Home' page is prese
 
 
 ## Contribution
-Feel free to contribute to this project. After forking and cloning, you may:
+Feel free to contribute to this project. After forking and cloning, you may add this repository as upstream (by SSH):
 
 ```
-git remote add upstream <original-repo-url>
+git remote add upstream git@github.com:karynalysenko/proj.git
 ```
 
 And create a new branch. This way, whenever you push your changes, you may create a merge request to the source code, which is the present repository.
