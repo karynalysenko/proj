@@ -17,10 +17,8 @@ node app.js
 
 This repository contains 4 example files inside folder <I>file_examples</I> that can be tested out or serve as reference. Two of them are the same as used in the DEMO slide of the Help page and in here below: one.csv and one-exp.csv, where the second is the expression data. This folder also contains extra two files (zero.csv and zero-exp.csv) that are other two examples, just with more data.
 
-### NetViewer overview
-NetViewer contains three pages: Home, Help and 'Not found'.
-
-**Home**
+### NetViewer Home page
+NetViewer contains three pages: Home, Help and 'Not found'. 'Home' page is presented below.
 ![alt text](public/src/home.png)
 
 
@@ -29,10 +27,7 @@ NetViewer contains three pages: Home, Help and 'Not found'.
 ![alt text](public/src/netviewer.drawio.png)
 
 ### DEMO
-
-<video width="500" controls>
-  <source src="public/src/howto.webm" type="video/webm">
-</video>
+<video src="https://github.com/user-attachments/assets/03f30450-9abd-4dd3-9c7d-82b0c7844967"></video>
 
 
 ## Contribution
