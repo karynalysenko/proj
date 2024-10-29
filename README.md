@@ -30,7 +30,7 @@ NetViewer contains three pages: Home, Help and 'Not found'.
 
 ### DEMO
 
-<video width="1000" controls>
+<video width="500" controls>
   <source src="public/src/howto.webm" type="video/webm">
 </video>
 
