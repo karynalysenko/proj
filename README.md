@@ -1,5 +1,7 @@
+<p align="center"> <img title="Logo" alt="" src="public/src/logo.png"></p>
+
 # Documentation
-This repository presents the code of Master's dissertation in Bioinformatics, presented in 2024, at University of Minho, entitled: 
+This repository presents the code of Master's dissertation in Bioinformatics, to be presented in 2024, at University of Minho, entitled: 
 **Web application for visualizing molecular interaction networks based on Cytoscape.js**.
 
 ## Context
@@ -13,7 +15,25 @@ npm install
 node app.js
 ```
 
-This repository contains 4 example files inside folder <I>file_examples</I> that can be tested out or serve as reference. Two of them are the same as used in the DEMO slide of the Help page: one.csv and one-exp.csv, where the second is the expression data. This folder also contains extra two files (zero.csv and zero-exp.csv) that are other two examples, just with more data.
+This repository contains 4 example files inside folder <I>file_examples</I> that can be tested out or serve as reference. Two of them are the same as used in the DEMO slide of the Help page and in here below: one.csv and one-exp.csv, where the second is the expression data. This folder also contains extra two files (zero.csv and zero-exp.csv) that are other two examples, just with more data.
+
+### NetViewer overview
+NetViewer contains three pages: Home, Help and 'Not found'.
+
+**Home**
+![alt text](public/src/home.png)
+
+
+### Workflow
+
+![alt text](public/src/netviewer.drawio.png)
+
+### DEMO
+
+<video width="1000" controls>
+  <source src="public/src/howto.webm" type="video/webm">
+</video>
+
 
 ## Contribution
 Feel free to contribute to this project. After forking and cloning, you may:
